@@ -11,7 +11,7 @@
   --warn: #b5542e;
   --warn-tint: #f6e4dc;
   --radius: 14px;
-  --font: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color-scheme: light;
 }
 
@@ -51,22 +51,20 @@ h2,
 .score__value,
 .score__band {
   font-family: var(--font);
-  font-stretch: 75%;
-  font-variation-settings: 'wdth' 75;
   letter-spacing: -0.01em;
   line-height: 1.05;
 }
 
 h1 {
-  font-size: clamp(2rem, 7vw, 2.75rem);
-  font-weight: 800;
+  font-size: clamp(1.75rem, 6.5vw, 2.5rem);
+  font-weight: 700;
   margin: 0 0 8px;
   text-transform: uppercase;
 }
 
 h2 {
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
   margin: 32px 0 12px;
 }
@@ -94,7 +92,7 @@ h1:focus-visible {
 
 .brand {
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted);
@@ -103,7 +101,7 @@ h1:focus-visible {
 
 .brand__mark {
   color: var(--teal);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .card {
@@ -122,7 +120,7 @@ h1:focus-visible {
 .eyebrow {
   margin: 0 0 6px;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--teal);
@@ -169,7 +167,7 @@ h1:focus-visible {
 label,
 legend {
   display: block;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.95rem;
   margin-bottom: 6px;
 }
@@ -417,7 +415,7 @@ fieldset.choice {
   display: flex;
   justify-content: space-between;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--muted);
   margin-bottom: 6px;
 }
@@ -483,15 +481,13 @@ fieldset.choice {
 
 .live__grid strong {
   font-size: 1.6rem;
-  font-stretch: 75%;
-  font-variation-settings: 'wdth' 75;
   line-height: 1;
 }
 
 .live__label {
   display: block;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
@@ -515,7 +511,7 @@ fieldset.choice {
   padding: 3px 10px;
   border-radius: 999px;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -573,15 +569,15 @@ fieldset.choice {
 
 .hero__label {
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
 }
 
 .hero__value {
-  font-size: clamp(4.5rem, 20vw, 7.5rem);
-  font-weight: 800;
+  font-size: clamp(4rem, 18vw, 6.5rem);
+  font-weight: 700;
   color: var(--teal);
 }
 
@@ -622,7 +618,7 @@ fieldset.choice {
 
 .score__value {
   font-size: 3.5rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .score__max {
@@ -632,7 +628,7 @@ fieldset.choice {
 
 .score__band {
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
   margin: 0 0 4px;
   color: var(--teal);
@@ -710,7 +706,7 @@ fieldset.choice {
 }
 
 .breakdown tbody th {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .breakdown .num {
@@ -722,7 +718,7 @@ fieldset.choice {
 
 .breakdown tfoot th,
 .breakdown tfoot td {
-  font-weight: 800;
+  font-weight: 700;
   border-bottom: 0;
 }
 
@@ -765,7 +761,7 @@ fieldset.choice {
   .breakdown td[data-label]::before {
     content: attr(data-label);
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--muted);
@@ -880,7 +876,7 @@ fieldset.choice {
   top: 50%;
   transform: translateY(-50%);
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   padding: 0 3px;
