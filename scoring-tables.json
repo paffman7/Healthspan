@@ -1,0 +1,1255 @@
+{
+  "meta": {
+    "source": "Primedy Healthspan Challenge Assessment Scorecard (June 2026 version)",
+    "notes": [
+      "Every number here was transcribed from the scorecard PDF. Tier ranges were converted to machine-readable thresholds (see tierRules).",
+      "Sex keys: 'male' / 'female'. Age-band keys: 'under40' (<40), '40to59', '60plus'.",
+      "Median arrays are ordered by decade: 20-29, 30-39, 40-49, 50-59, 60-69, 70+ and are anchored at ages 25, 35, 45, 55, 65, 75."
+    ]
+  },
+  "tierOrder": [
+    "elite",
+    "strong",
+    "good",
+    "fair",
+    "at_risk"
+  ],
+  "tierPoints": {
+    "elite": 10,
+    "strong": 8,
+    "good": 6,
+    "fair": 4,
+    "at_risk": 2,
+    "not_tested": 0
+  },
+  "tierRules": {
+    "higher_is_better": "thresholds = minimum value for [elite, strong, good, fair]. Walk the list; the first tier whose minimum the result meets (result >= min) wins. Below the fair minimum = at_risk. A null threshold means that tier cannot be reached on this table.",
+    "lower_is_better": "thresholds = exclusive upper limit for [elite, strong, good, fair]. The first tier where result < limit wins. At or above the fair limit = at_risk. Times are in seconds."
+  },
+  "healthspanBands": [
+    {
+      "min": 90,
+      "max": 100,
+      "key": "elite",
+      "label": "Elite Healthspan",
+      "description": "Performing in the top tier across the board. Functional age indicator 20-39 regardless of chronological age."
+    },
+    {
+      "min": 70,
+      "max": 89,
+      "key": "strong",
+      "label": "Strong Healthspan",
+      "description": "Above average across most components. Functional age indicator 10-15 years younger than chronological."
+    },
+    {
+      "min": 50,
+      "max": 69,
+      "key": "good",
+      "label": "Good Healthspan",
+      "description": "Solid baseline with clear targets for improvement. Functional age tracks roughly with chronological age."
+    },
+    {
+      "min": 30,
+      "max": 49,
+      "key": "fair",
+      "label": "Fair Healthspan",
+      "description": "Significant room to improve. Multiple components below age/sex norms. Targeted programming recommended."
+    },
+    {
+      "min": 0,
+      "max": 29,
+      "key": "at_risk",
+      "label": "At-Risk Healthspan",
+      "description": "Elevated mortality risk based on combined predictors. Immediate intervention is the priority."
+    }
+  ],
+  "functionalAge": {
+    "anchorAges": [
+      25,
+      35,
+      45,
+      55,
+      65,
+      75
+    ],
+    "clampMin": 20,
+    "clampMax": 85
+  },
+  "stations": {
+    "body_composition": {
+      "number": 1,
+      "name": "Body Composition",
+      "metric": "body_fat_percent",
+      "unit": "%",
+      "direction": "lower_is_better",
+      "tiers": {
+        "male": {
+          "under40": [
+            10,
+            15,
+            20,
+            25
+          ],
+          "40to59": [
+            14,
+            18,
+            23,
+            28
+          ],
+          "60plus": [
+            18,
+            22,
+            26,
+            30
+          ]
+        },
+        "female": {
+          "under40": [
+            18,
+            23,
+            28,
+            33
+          ],
+          "40to59": [
+            22,
+            27,
+            32,
+            37
+          ],
+          "60plus": [
+            25,
+            30,
+            35,
+            40
+          ]
+        }
+      },
+      "asmiSarcopeniaThreshold": {
+        "male": 7.0,
+        "female": 5.4,
+        "unit": "kg/m2"
+      },
+      "atHome": {
+        "waistToHeightTarget": 0.5,
+        "calfCircumferenceTargetCm": {
+          "male": 34,
+          "female": 33
+        },
+        "PLACEHOLDER_waistToHeightTiers_lower_is_better": [
+          0.43,
+          0.47,
+          0.5,
+          0.6
+        ],
+        "placeholderNote": "The scorecard gives targets but no tier table or functional-age table for the at-home substitutes. These tiers are a placeholder pending the owner's decision."
+      },
+      "medians": {
+        "male": [
+          15,
+          18,
+          21,
+          23,
+          25,
+          26
+        ],
+        "female": [
+          22,
+          25,
+          28,
+          30,
+          32,
+          33
+        ]
+      }
+    },
+    "sitting_rising": {
+      "number": 2,
+      "name": "Sitting-Rising Test",
+      "metric": "srt_score",
+      "unit": "points (0-10, 0.5 steps)",
+      "direction": "higher_is_better",
+      "inputMin": 0,
+      "inputMax": 10,
+      "inputStep": 0.5,
+      "tiers": {
+        "all": [
+          10,
+          8.5,
+          8,
+          5
+        ]
+      },
+      "medians": {
+        "all": [
+          10,
+          9.5,
+          9,
+          8,
+          6.5,
+          5
+        ]
+      }
+    },
+    "single_leg_stance": {
+      "number": 3,
+      "name": "Single-Leg Stance",
+      "metric": "hold_seconds",
+      "unit": "s",
+      "direction": "higher_is_better",
+      "tiersByAgeOnly": true,
+      "tiers": {
+        "all": {
+          "under40": [
+            60,
+            40,
+            25,
+            15
+          ],
+          "40to59": [
+            40,
+            25,
+            15,
+            10
+          ],
+          "60plus": [
+            25,
+            15,
+            10,
+            5
+          ]
+        }
+      },
+      "medians": {
+        "all": [
+          60,
+          45,
+          30,
+          20,
+          12,
+          5
+        ]
+      },
+      "medianNote": "The scorecard lists the 20-29 median as '60+'; treated as 60."
+    },
+    "grip_strength": {
+      "number": 4,
+      "name": "Grip Strength",
+      "metric": "grip_kg_dominant",
+      "unit": "kg",
+      "direction": "higher_is_better",
+      "tiers": {
+        "male": {
+          "under40": [
+            55,
+            50,
+            45,
+            40
+          ],
+          "40to59": [
+            50,
+            45,
+            40,
+            35
+          ],
+          "60plus": [
+            40,
+            35,
+            30,
+            26
+          ]
+        },
+        "female": {
+          "under40": [
+            36,
+            32,
+            28,
+            24
+          ],
+          "40to59": [
+            33,
+            29,
+            25,
+            20
+          ],
+          "60plus": [
+            26,
+            22,
+            18,
+            16
+          ]
+        }
+      },
+      "medians": {
+        "male": [
+          50,
+          49,
+          46,
+          43,
+          37,
+          31
+        ],
+        "female": [
+          31,
+          31,
+          29,
+          27,
+          23,
+          19
+        ]
+      }
+    },
+    "deadlift": {
+      "number": 5,
+      "name": "Deadlift 3RM",
+      "metric": "estimated_1rm_to_bodyweight",
+      "unit": "x BW",
+      "direction": "higher_is_better",
+      "tiers": {
+        "male": {
+          "under40": [
+            2.5,
+            2.0,
+            1.5,
+            1.0
+          ],
+          "40to59": [
+            2.0,
+            1.5,
+            1.25,
+            0.85
+          ],
+          "60plus": [
+            1.5,
+            1.25,
+            0.75,
+            0.5
+          ]
+        },
+        "female": {
+          "under40": [
+            2.0,
+            1.5,
+            1.25,
+            0.85
+          ],
+          "40to59": [
+            1.5,
+            1.25,
+            0.9,
+            0.6
+          ],
+          "60plus": [
+            1.25,
+            0.9,
+            0.55,
+            0.35
+          ]
+        }
+      },
+      "medians": {
+        "male": [
+          1.75,
+          1.75,
+          1.5,
+          1.25,
+          1.0,
+          0.75
+        ],
+        "female": [
+          1.25,
+          1.25,
+          1.1,
+          0.9,
+          0.75,
+          0.5
+        ]
+      }
+    },
+    "strict_press": {
+      "number": 6,
+      "name": "Strict Press 3RM",
+      "metric": "estimated_1rm_to_bodyweight",
+      "unit": "x BW",
+      "direction": "higher_is_better",
+      "tiers": {
+        "male": {
+          "under40": [
+            1.0,
+            0.85,
+            0.6,
+            0.4
+          ],
+          "40to59": [
+            0.85,
+            0.7,
+            0.5,
+            0.35
+          ],
+          "60plus": [
+            0.7,
+            0.55,
+            0.35,
+            0.2
+          ]
+        },
+        "female": {
+          "under40": [
+            0.75,
+            0.55,
+            0.4,
+            0.25
+          ],
+          "40to59": [
+            0.6,
+            0.45,
+            0.3,
+            0.2
+          ],
+          "60plus": [
+            0.5,
+            0.35,
+            0.2,
+            0.13
+          ]
+        }
+      },
+      "medians": {
+        "male": [
+          0.7,
+          0.7,
+          0.65,
+          0.55,
+          0.45,
+          0.35
+        ],
+        "female": [
+          0.45,
+          0.45,
+          0.4,
+          0.35,
+          0.3,
+          0.25
+        ]
+      }
+    },
+    "push_ups": {
+      "number": 7,
+      "name": "Max Push-Ups",
+      "direction": "higher_is_better",
+      "variants": {
+        "full": {
+          "metric": "reps",
+          "unit": "reps",
+          "tiers": {
+            "male": {
+              "under40": [
+                40,
+                30,
+                20,
+                10
+              ],
+              "40to59": [
+                30,
+                22,
+                15,
+                8
+              ],
+              "60plus": [
+                20,
+                14,
+                10,
+                5
+              ]
+            },
+            "female": {
+              "under40": [
+                25,
+                18,
+                12,
+                6
+              ],
+              "40to59": [
+                18,
+                12,
+                8,
+                4
+              ],
+              "60plus": [
+                12,
+                8,
+                5,
+                2
+              ]
+            }
+          },
+          "medians": {
+            "male": [
+              25,
+              22,
+              17,
+              12,
+              9,
+              6
+            ],
+            "female": [
+              15,
+              12,
+              9,
+              6,
+              4,
+              2
+            ]
+          }
+        },
+        "knee": {
+          "metric": "reps",
+          "unit": "reps",
+          "tiers": {
+            "male": {
+              "under40": [
+                45,
+                32,
+                23,
+                13
+              ],
+              "40to59": [
+                32,
+                23,
+                16,
+                9
+              ],
+              "60plus": [
+                23,
+                16,
+                10,
+                5
+              ]
+            },
+            "female": {
+              "under40": [
+                35,
+                25,
+                18,
+                10
+              ],
+              "40to59": [
+                25,
+                18,
+                12,
+                7
+              ],
+              "60plus": [
+                18,
+                12,
+                8,
+                4
+              ]
+            }
+          },
+          "medians": {
+            "male": [
+              28,
+              24,
+              19,
+              14,
+              10,
+              7
+            ],
+            "female": [
+              22,
+              18,
+              14,
+              10,
+              7,
+              4
+            ]
+          }
+        }
+      }
+    },
+    "pull_ups": {
+      "number": 8,
+      "name": "Max Strict Pull-Ups (or Dead Hang)",
+      "direction": "higher_is_better",
+      "variants": {
+        "pull_ups": {
+          "metric": "reps",
+          "unit": "reps",
+          "useWhen": "reps >= 1",
+          "tiers": {
+            "male": {
+              "under40": [
+                15,
+                10,
+                6,
+                3
+              ],
+              "40to59": [
+                10,
+                7,
+                4,
+                1
+              ],
+              "60plus": [
+                6,
+                3,
+                1,
+                null
+              ]
+            },
+            "female": {
+              "under40": [
+                8,
+                5,
+                2,
+                1
+              ],
+              "40to59": [
+                5,
+                3,
+                1,
+                null
+              ],
+              "60plus": [
+                3,
+                1,
+                null,
+                null
+              ]
+            }
+          },
+          "tierNote": "Cells on the scorecard that say 'Hang only', 'Cannot hang' or 'Hang >=30s' are handled by routing athletes with 0 pull-ups to the dead_hang variant, as the scorecard instructs. Those tiers are null here because they cannot be reached with 1+ reps.",
+          "medians": {
+            "male": [
+              8,
+              6,
+              4,
+              3,
+              1,
+              0
+            ],
+            "female": [
+              2,
+              1,
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          "medianNote": "Zero-valued medians (marked 0* on the scorecard) are dropped before interpolation, because 0 reps routes to dead_hang."
+        },
+        "dead_hang": {
+          "metric": "hang_seconds",
+          "unit": "s",
+          "useWhen": "pull-up reps == 0",
+          "tiers": {
+            "male": {
+              "under40": [
+                120,
+                90,
+                60,
+                30
+              ],
+              "40to59": [
+                90,
+                60,
+                45,
+                25
+              ],
+              "60plus": [
+                60,
+                45,
+                30,
+                15
+              ]
+            },
+            "female": {
+              "under40": [
+                90,
+                60,
+                45,
+                20
+              ],
+              "40to59": [
+                75,
+                50,
+                35,
+                15
+              ],
+              "60plus": [
+                45,
+                30,
+                20,
+                10
+              ]
+            }
+          },
+          "medians": {
+            "male": [
+              60,
+              55,
+              50,
+              40,
+              30,
+              20
+            ],
+            "female": [
+              45,
+              40,
+              35,
+              30,
+              20,
+              12
+            ]
+          },
+          "medianNote": "Scorecard lists hang medians as 'men/women', e.g. '60/45'."
+        }
+      }
+    },
+    "cardio": {
+      "number": 9,
+      "name": "VO2 Max Test: 1-Mile Run or 2K Row",
+      "variants": {
+        "mile_run": {
+          "metric": "time_seconds",
+          "unit": "s",
+          "direction": "lower_is_better",
+          "tiers": {
+            "male": {
+              "under40": [
+                390,
+                451,
+                511,
+                601
+              ],
+              "40to59": [
+                450,
+                511,
+                571,
+                661
+              ],
+              "60plus": [
+                540,
+                631,
+                721,
+                841
+              ]
+            },
+            "female": {
+              "under40": [
+                450,
+                511,
+                571,
+                691
+              ],
+              "40to59": [
+                510,
+                571,
+                631,
+                751
+              ],
+              "60plus": [
+                630,
+                721,
+                811,
+                961
+              ]
+            }
+          }
+        },
+        "row_2k": {
+          "metric": "time_seconds",
+          "unit": "s",
+          "direction": "lower_is_better",
+          "tiers": {
+            "male": {
+              "under40": [
+                420,
+                451,
+                481,
+                541
+              ],
+              "40to59": [
+                450,
+                481,
+                526,
+                586
+              ],
+              "60plus": [
+                510,
+                571,
+                631,
+                691
+              ]
+            },
+            "female": {
+              "under40": [
+                465,
+                496,
+                541,
+                601
+              ],
+              "40to59": [
+                510,
+                541,
+                586,
+                646
+              ],
+              "60plus": [
+                570,
+                631,
+                691,
+                781
+              ]
+            }
+          }
+        },
+        "rockport_walk": {
+          "metric": "estimated_vo2max",
+          "unit": "ml/kg/min",
+          "direction": "higher_is_better",
+          "tierSource": "vo2max table"
+        }
+      },
+      "vo2maxTiers": {
+        "direction": "higher_is_better",
+        "tiers": {
+          "male": {
+            "under40": [
+              50,
+              43,
+              37,
+              32
+            ],
+            "40to59": [
+              43,
+              37,
+              31,
+              26
+            ],
+            "60plus": [
+              35,
+              29,
+              24,
+              20
+            ]
+          },
+          "female": {
+            "under40": [
+              44,
+              37,
+              31,
+              26
+            ],
+            "40to59": [
+              37,
+              31,
+              26,
+              22
+            ],
+            "60plus": [
+              30,
+              25,
+              21,
+              17
+            ]
+          }
+        },
+        "tierNote": "Scorecard ranges overlap at one boundary for men 40-59 (43), women 40-59 (37) and women 60+ (30). The boundary value is given to the higher tier."
+      },
+      "medians": {
+        "metric": "vo2max",
+        "unit": "ml/kg/min",
+        "direction": "higher_is_better",
+        "male": [
+          43,
+          40,
+          37,
+          33,
+          28,
+          23
+        ],
+        "female": [
+          35,
+          32,
+          30,
+          26,
+          22,
+          19
+        ]
+      },
+      "timeToVo2": {
+        "description": "Pairs of [time_seconds, vo2max] taken from the scorecard: each tier's time boundary is paired with the same tier's VO2 boundary for the athlete's sex and age band. Estimate VO2 by piecewise-linear interpolation between pairs (extrapolate with the nearest segment's slope beyond the ends, then clamp VO2 to 10-80). This keeps the functional age consistent with the tier the athlete earned.",
+        "mile_run": {
+          "male": {
+            "under40": [
+              [
+                390,
+                50
+              ],
+              [
+                450,
+                43
+              ],
+              [
+                510,
+                37
+              ],
+              [
+                600,
+                32
+              ]
+            ],
+            "40to59": [
+              [
+                450,
+                43
+              ],
+              [
+                510,
+                37
+              ],
+              [
+                570,
+                31
+              ],
+              [
+                660,
+                26
+              ]
+            ],
+            "60plus": [
+              [
+                540,
+                35
+              ],
+              [
+                630,
+                29
+              ],
+              [
+                720,
+                24
+              ],
+              [
+                840,
+                20
+              ]
+            ]
+          },
+          "female": {
+            "under40": [
+              [
+                450,
+                44
+              ],
+              [
+                510,
+                37
+              ],
+              [
+                570,
+                31
+              ],
+              [
+                690,
+                26
+              ]
+            ],
+            "40to59": [
+              [
+                510,
+                37
+              ],
+              [
+                570,
+                31
+              ],
+              [
+                630,
+                26
+              ],
+              [
+                750,
+                22
+              ]
+            ],
+            "60plus": [
+              [
+                630,
+                30
+              ],
+              [
+                720,
+                25
+              ],
+              [
+                810,
+                21
+              ],
+              [
+                960,
+                17
+              ]
+            ]
+          }
+        },
+        "row_2k": {
+          "male": {
+            "under40": [
+              [
+                420,
+                50
+              ],
+              [
+                450,
+                43
+              ],
+              [
+                480,
+                37
+              ],
+              [
+                540,
+                32
+              ]
+            ],
+            "40to59": [
+              [
+                450,
+                43
+              ],
+              [
+                480,
+                37
+              ],
+              [
+                525,
+                31
+              ],
+              [
+                585,
+                26
+              ]
+            ],
+            "60plus": [
+              [
+                510,
+                35
+              ],
+              [
+                570,
+                29
+              ],
+              [
+                630,
+                24
+              ],
+              [
+                690,
+                20
+              ]
+            ]
+          },
+          "female": {
+            "under40": [
+              [
+                465,
+                44
+              ],
+              [
+                495,
+                37
+              ],
+              [
+                540,
+                31
+              ],
+              [
+                600,
+                26
+              ]
+            ],
+            "40to59": [
+              [
+                510,
+                37
+              ],
+              [
+                540,
+                31
+              ],
+              [
+                585,
+                26
+              ],
+              [
+                645,
+                22
+              ]
+            ],
+            "60plus": [
+              [
+                570,
+                30
+              ],
+              [
+                630,
+                25
+              ],
+              [
+                690,
+                21
+              ],
+              [
+                780,
+                17
+              ]
+            ]
+          }
+        }
+      },
+      "rockportFormula": {
+        "expression": "VO2max = 132.853 - 0.0769*weight_lb - 0.3877*age - 3.2649*time_min - 0.1565*finish_hr + 6.315*sex",
+        "sex": "1 = male, 0 = female",
+        "source": "Kline et al. 1987 (Rockport 1-Mile Walk Test)"
+      }
+    },
+    "jump": {
+      "number": 10,
+      "name": "Vertical Jump (or Broad Jump)",
+      "direction": "higher_is_better",
+      "variants": {
+        "vertical": {
+          "metric": "inches",
+          "unit": "in",
+          "tiers": {
+            "male": {
+              "under40": [
+                24,
+                20,
+                16,
+                12
+              ],
+              "40to59": [
+                20,
+                16,
+                13,
+                10
+              ],
+              "60plus": [
+                14,
+                11,
+                8,
+                5
+              ]
+            },
+            "female": {
+              "under40": [
+                18,
+                14,
+                11,
+                8
+              ],
+              "40to59": [
+                15,
+                11,
+                8,
+                5
+              ],
+              "60plus": [
+                10,
+                7,
+                5,
+                3
+              ]
+            }
+          },
+          "medians": {
+            "male": [
+              22,
+              19,
+              16,
+              13,
+              10,
+              7
+            ],
+            "female": [
+              15,
+              13,
+              10,
+              8,
+              6,
+              4
+            ]
+          }
+        },
+        "broad": {
+          "metric": "inches",
+          "unit": "in",
+          "tiers": {
+            "male": {
+              "under40": [
+                100,
+                85,
+                70,
+                55
+              ],
+              "40to59": [
+                85,
+                70,
+                55,
+                40
+              ],
+              "60plus": [
+                65,
+                50,
+                35,
+                25
+              ]
+            },
+            "female": {
+              "under40": [
+                80,
+                65,
+                50,
+                35
+              ],
+              "40to59": [
+                65,
+                50,
+                40,
+                28
+              ],
+              "60plus": [
+                50,
+                35,
+                25,
+                17
+              ]
+            }
+          },
+          "medians": {
+            "male": [
+              80,
+              70,
+              60,
+              50,
+              38,
+              28
+            ],
+            "female": [
+              55,
+              48,
+              38,
+              30,
+              24,
+              17
+            ]
+          }
+        }
+      }
+    }
+  }
+}
