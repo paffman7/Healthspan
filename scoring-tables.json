@@ -75,6 +75,20 @@
     "clampMin": 20,
     "clampMax": 85
   },
+  "formulas": {
+    "note": "Constants the spec states in words. Edit here, not in code.",
+    "estimated1rm": {
+      "expression": "weight * (1 + repCoefficient * reps)",
+      "repCoefficient": 0.0333,
+      "ratioDecimals": 3
+    },
+    "lbPerKg": 2.2046,
+    "cmPerInch": 2.54,
+    "vo2EstimateClamp": {
+      "min": 10,
+      "max": 80
+    }
+  },
   "stations": {
     "body_composition": {
       "number": 1,
