@@ -340,24 +340,30 @@ describe("2K row VO₂: Concept2 / Hagerman formula (rowVo2Method: 'concept2')",
   });
 });
 
-describe('2K row: default scorecard method agrees with the VO₂ tier table', () => {
-  // The only exceptions are the exact Elite cutoff seconds: the scorecard's row
-  // Elite is "under" the time (e.g. under 7:00) while its VO₂ Elite is "or more"
-  // (50+), and the cutoff time maps to exactly that VO₂.
-  const eliteCutoff = { male: { 30: 420, 50: 450, 65: 510 }, female: { 30: 465, 50: 510, 65: 570 } };
-
-  it('row tier matches the Known VO₂ tier for its own VO₂ estimate', () => {
+describe('Run and row: default scorecard method agrees with the VO₂ tier table', () => {
+  it.each(['row_2k', 'mile_run'])('%s tier matches the Known VO₂ tier for its own VO₂ estimate, every second', (version) => {
     let checked = 0;
     for (const sex of ['male', 'female'])
       for (const age of [30, 50, 65])
-        for (let t = 300; t <= 1000; t += 1) {
-          if (t === eliteCutoff[sex][age]) continue;
+        for (let t = 300; t <= 1100; t += 1) {
           const a = { sex, age, bodyweightLb: 170 };
-          const row = scoreStation('cardio', { version: 'row_2k', timeSeconds: t }, a);
+          const row = scoreStation('cardio', { version, timeSeconds: t }, a);
           const known = scoreStation('cardio', { version: 'known_vo2', vo2max: row.vo2 }, a);
           expect(`${sex} ${age} ${t}s: ${known.tier}`).toBe(`${sex} ${age} ${t}s: ${row.tier}`);
           checked++;
         }
     expect(checked).toBeGreaterThan(4000);
+  });
+});
+
+describe('Elite cutoff second counts as Elite (matches the VO₂ table)', () => {
+  const m35 = { sex: 'male', age: 35, bodyweightLb: 185 };
+  it('male 35: 7:00 row is Elite, 7:01 is Strong', () => {
+    expect(scoreStation('cardio', { version: 'row_2k', timeSeconds: mmss('7:00') }, m35).tier).toBe('elite');
+    expect(scoreStation('cardio', { version: 'row_2k', timeSeconds: mmss('7:01') }, m35).tier).toBe('strong');
+  });
+  it('male 35: 6:30 mile is Elite, 6:31 is Strong', () => {
+    expect(scoreStation('cardio', { version: 'mile_run', timeSeconds: mmss('6:30') }, m35).tier).toBe('elite');
+    expect(scoreStation('cardio', { version: 'mile_run', timeSeconds: mmss('6:31') }, m35).tier).toBe('strong');
   });
 });
