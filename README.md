@@ -21,7 +21,7 @@ Requires Node 20+.
 ```bash
 npm install
 npm test          # unit tests
-npm run dev       # dev server with live reload → http://localhost:5173
+npm run dev       # dev server with live reload → http://localhost:3000
 npm run build     # production build into dist/
 npm run preview   # serve the production build → http://localhost:4173
 ```
