@@ -24,7 +24,7 @@
   },
   "tierRules": {
     "higher_is_better": "thresholds = minimum value for [elite, strong, good, fair]. Walk the list; the first tier whose minimum the result meets (result >= min) wins. Below the fair minimum = at_risk. A null threshold means that tier cannot be reached on this table.",
-    "lower_is_better": "thresholds = exclusive upper limit for [elite, strong, good, fair]. The first tier where result < limit wins. At or above the fair limit = at_risk. Times are in seconds."
+    "lower_is_better": "thresholds = exclusive upper limit for [elite, strong, good, fair]. The first tier where result < limit wins. At or above the fair limit = at_risk. Times are in seconds. Run and row cutoffs include their boundary second (e.g. elite 421 = 7:00 or faster), so a time at a cutoff lands in the same tier as its VO2 in vo2maxTiers."
   },
   "healthspanBands": [
     {
@@ -732,19 +732,19 @@
           "tiers": {
             "male": {
               "under40": [
-                390,
+                391,
                 451,
                 511,
                 601
               ],
               "40to59": [
-                450,
+                451,
                 511,
                 571,
                 661
               ],
               "60plus": [
-                540,
+                541,
                 631,
                 721,
                 841
@@ -752,19 +752,19 @@
             },
             "female": {
               "under40": [
-                450,
+                451,
                 511,
                 571,
                 691
               ],
               "40to59": [
-                510,
+                511,
                 571,
                 631,
                 751
               ],
               "60plus": [
-                630,
+                631,
                 721,
                 811,
                 961
@@ -779,19 +779,19 @@
           "tiers": {
             "male": {
               "under40": [
-                420,
+                421,
                 451,
                 481,
                 541
               ],
               "40to59": [
-                450,
+                451,
                 481,
                 526,
                 586
               ],
               "60plus": [
-                510,
+                511,
                 571,
                 631,
                 691
@@ -799,19 +799,19 @@
             },
             "female": {
               "under40": [
-                465,
+                466,
                 496,
                 541,
                 601
               ],
               "40to59": [
-                510,
+                511,
                 541,
                 586,
                 646
               ],
               "60plus": [
-                570,
+                571,
                 631,
                 691,
                 781

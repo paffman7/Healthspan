@@ -283,9 +283,10 @@ describe('Owner decisions and rules', () => {
   });
 });
 
-describe('2K row VO₂: Concept2 / Hagerman formula (default)', () => {
+describe("2K row VO₂: Concept2 / Hagerman formula (rowVo2Method: 'concept2')", () => {
+  const concept2 = { config: { ...baseConfig, rowVo2Method: 'concept2' } };
   const row = (sex, age, bodyweightLb, time, highlyTrained) =>
-    scoreStation('cardio', { version: 'row_2k', timeSeconds: mmss(time), highlyTrained }, { sex, age, bodyweightLb });
+    scoreStation('cardio', { version: 'row_2k', timeSeconds: mmss(time), highlyTrained }, { sex, age, bodyweightLb }, concept2);
 
   it('male 35, 185 lb, 7:45, not highly trained → VO₂ 44.39, Good (from time), age 20.4', () => {
     // Y = 10.7 − 0.9 × 7.75 = 3.725 L/min; 3725 / 83.915 kg = 44.39
@@ -336,5 +337,33 @@ describe('2K row VO₂: Concept2 / Hagerman formula (default)', () => {
   it("'scorecard' method keeps the original time-to-VO₂ pairs", () => {
     const r = scoreStation('cardio', { version: 'row_2k', timeSeconds: mmss('7:45'), highlyTrained: true }, { sex: 'male', age: 35, bodyweightLb: 185 }, scorecard);
     closeTo(r.vo2, 40.0);
+  });
+});
+
+describe('Run and row: default scorecard method agrees with the VO₂ tier table', () => {
+  it.each(['row_2k', 'mile_run'])('%s tier matches the Known VO₂ tier for its own VO₂ estimate, every second', (version) => {
+    let checked = 0;
+    for (const sex of ['male', 'female'])
+      for (const age of [30, 50, 65])
+        for (let t = 300; t <= 1100; t += 1) {
+          const a = { sex, age, bodyweightLb: 170 };
+          const row = scoreStation('cardio', { version, timeSeconds: t }, a);
+          const known = scoreStation('cardio', { version: 'known_vo2', vo2max: row.vo2 }, a);
+          expect(`${sex} ${age} ${t}s: ${known.tier}`).toBe(`${sex} ${age} ${t}s: ${row.tier}`);
+          checked++;
+        }
+    expect(checked).toBeGreaterThan(4000);
+  });
+});
+
+describe('Elite cutoff second counts as Elite (matches the VO₂ table)', () => {
+  const m35 = { sex: 'male', age: 35, bodyweightLb: 185 };
+  it('male 35: 7:00 row is Elite, 7:01 is Strong', () => {
+    expect(scoreStation('cardio', { version: 'row_2k', timeSeconds: mmss('7:00') }, m35).tier).toBe('elite');
+    expect(scoreStation('cardio', { version: 'row_2k', timeSeconds: mmss('7:01') }, m35).tier).toBe('strong');
+  });
+  it('male 35: 6:30 mile is Elite, 6:31 is Strong', () => {
+    expect(scoreStation('cardio', { version: 'mile_run', timeSeconds: mmss('6:30') }, m35).tier).toBe('elite');
+    expect(scoreStation('cardio', { version: 'mile_run', timeSeconds: mmss('6:31') }, m35).tier).toBe('strong');
   });
 });
