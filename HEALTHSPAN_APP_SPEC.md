@@ -72,7 +72,7 @@ If a value looks unrealistic (a 3-minute mile, say), show a gentle "Double-check
 - Keep the scoring engine as a pure module (`src/scoring/`) with no UI code. Write unit tests from Part 4 and get them passing **before** building any screens.
 - Read every number from `scoring-tables.json`, and put owner decisions in `config.js`. Don't hard-code either.
 - Build mobile-first and accessible (labeled inputs, keyboard navigation, visible focus, good contrast), and include a print stylesheet for the results page.
-- Style it to match the existing website quiz. Use Archivo (condensed for headlines). Colors: ink `#18242E`, background `#F2F4F1`, teal `#1F6F6B`, yellow `#E8B931`, lines `#C9D3D0`, secondary text `#5B6B72`, warning `#B5542E`.
+- Style it to match the existing website quiz. Use Montserrat (Bold for headlines and large text). Colors: ink `#18242E`, background `#F2F4F1`, teal `#1F6F6B`, yellow `#E8B931`, lines `#C9D3D0`, secondary text `#5B6B72`, warning `#B5542E`.
 - Store each session as one results object with a date, so history and re-test comparison can be added later.
 
 ### Scoring rules
