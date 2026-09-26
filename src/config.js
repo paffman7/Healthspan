@@ -39,9 +39,11 @@ const config = {
 
   // 7. 2K row VO2 estimate (used for the cardio functional age; the tier always
   //    comes from the row time table).
-  //    'concept2'  : Concept2 / Hagerman formula; asks the athlete's training level.
   //    'scorecard' : straight-line between the scorecard's time and VO2 tier pairs.
-  rowVo2Method: 'concept2',
+  //                  Always agrees with the VO2 tier table (e.g. a Known VO2 entry).
+  //    'concept2'  : Concept2 / Hagerman formula; asks the athlete's training level.
+  //                  Built on rowers; breaks down for rows slower than ~9-9:30.
+  rowVo2Method: 'scorecard',
 };
 
 export default config;
