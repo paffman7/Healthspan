@@ -947,16 +947,19 @@ fieldset.choice {
 /* --- Print --------------------------------------------------------------- */
 
 @media print {
+  /* Page margin for browsers that honour @page (Chrome, Edge, Firefox). */
   @page {
-    margin: 14mm;
+    margin: 0.6in;
   }
   body {
     background: #fff;
     font-size: 11pt;
   }
+  /* Extra inset so the content never touches the paper edge, even in Safari
+     (which ignores @page margins) or when "Margins: None" is chosen. */
   .app {
     max-width: none;
-    padding: 0;
+    padding: 0.1in 0.3in;
   }
   .card {
     border: 0;
