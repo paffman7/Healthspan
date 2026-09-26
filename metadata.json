@@ -1,0 +1,8 @@
+{
+  "name": "Healthspan Challenge Calculator",
+  "description": "Enter your Primedy Healthspan Challenge results to get your Healthspan Score and Healthspan Age.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
