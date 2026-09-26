@@ -55,6 +55,24 @@ export function vo2FromTime(variant, timeSeconds, sex, age, tables = defaultTabl
   return clamp(interpolate(pairs, timeSeconds), min, max);
 }
 
+/**
+ * Concept2 / Hagerman 2K row estimate.
+ * Y (L/min) = intercept - slope * minutes; VO2max = Y * 1000 / kg.
+ */
+export function vo2FromConcept2Row({ timeSeconds, weightLb, sex, highlyTrained }, tables = defaultTables) {
+  const f = tables.stations.cardio.rowVo2Concept2;
+  const kg = weightLb / tables.formulas.lbPerKg;
+  let coef;
+  if (highlyTrained) {
+    const t = f.highlyTrained[sex];
+    coef = kg <= t.weightSplitKg ? t.atOrBelowSplit : t.aboveSplit;
+  } else {
+    coef = f.notHighlyTrained[sex];
+  }
+  const litres = coef.intercept - coef.slope * (timeSeconds / 60);
+  return roundTo((litres * 1000) / kg, f.resultDecimals);
+}
+
 export function vo2FromRockport({ weightLb, age, timeSeconds, finishHr, sex }, tables = defaultTables) {
   const parsed = parseLinearFormula(tables.stations.cardio.rockportFormula.expression);
   return evaluateLinearFormula(parsed, {
@@ -220,17 +238,34 @@ const scorers = {
     return { tier, age, variant: 'both', tierFrom, ageFrom, components };
   },
 
-  cardio(input, athlete, tables) {
+  cardio(input, athlete, tables, config) {
     const st = tables.stations.cardio;
     const variant = input.version ?? 'mile_run';
     const band = ageBand(athlete.age);
+    const notes = [];
     let vo2;
+    let vo2ForAge;
+    let belowRange = null;
     let tier;
     if (variant === 'mile_run' || variant === 'row_2k') {
       if (!isNum(input.timeSeconds)) return null;
       const v = st.variants[variant];
       tier = tierFromThresholds(input.timeSeconds, pickTiers(v.tiers, athlete.sex, band), v.direction, tables.tierOrder);
-      vo2 = vo2FromTime(variant, input.timeSeconds, athlete.sex, athlete.age, tables);
+      if (variant === 'row_2k' && config.rowVo2Method === 'concept2') {
+        if (!isNum(athlete.bodyweightLb) || athlete.bodyweightLb <= 0) return null;
+        vo2 = vo2FromConcept2Row(
+          { timeSeconds: input.timeSeconds, weightLb: athlete.bodyweightLb, sex: athlete.sex, highlyTrained: input.highlyTrained === true },
+          tables,
+        );
+        const { min, max } = tables.formulas.vo2EstimateClamp;
+        vo2ForAge = clamp(vo2, min, max);
+        if (vo2 < st.rowVo2Concept2.validMinVo2) {
+          notes.push('Row time is outside the VO₂ formula’s data range');
+          belowRange = st.rowVo2Concept2.validMinVo2;
+        }
+      } else {
+        vo2 = vo2FromTime(variant, input.timeSeconds, athlete.sex, athlete.age, tables);
+      }
     } else {
       if (variant === 'rockport_walk') {
         if (!isNum(input.timeSeconds) || !isNum(input.finishHr) || !isNum(athlete.bodyweightLb)) return null;
@@ -247,13 +282,18 @@ const scorers = {
     }
     const fa = tables.functionalAge;
     const curve = medianCurve(pickMedians(st.medians, athlete.sex), fa.anchorAges);
-    const age = functionalAge(vo2, curve, fa.clampMin, fa.clampMax);
+    const age = functionalAge(vo2ForAge ?? vo2, curve, fa.clampMin, fa.clampMax);
     return {
       tier,
       age,
       variant,
       vo2,
-      calculated: { label: 'Est. VO₂ max', value: roundTo(vo2, 1), text: `est. VO₂ ${vo2.toFixed(1)}` },
+      notes,
+      calculated: {
+        label: 'Est. VO₂ max',
+        value: roundTo(vo2, 1),
+        text: belowRange === null ? `est. VO₂ ${vo2.toFixed(1)}` : `est. VO₂ under ${belowRange}`,
+      },
     };
   },
 

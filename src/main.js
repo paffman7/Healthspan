@@ -249,6 +249,7 @@ function stationView() {
       ${version.note ? `<p class="note">${version.note}</p>` : ''}
       <div class="row row--fields">
         ${version.fields
+          .filter((f) => f.kind !== 'choice')
           .map((f) => {
             const value = raw.values[f.name] ?? f.defaultValue ?? '';
             return field({
@@ -263,6 +264,10 @@ function stationView() {
           })
           .join('')}
       </div>
+      ${version.fields
+        .filter((f) => f.kind === 'choice')
+        .map((f) => choiceField(f, raw.values[f.name] ?? f.defaultValue))
+        .join('')}
       <div class="live" id="live" aria-live="polite">${liveResult(station)}</div>
       <div class="actions actions--station">
         <button type="button" class="btn btn--ghost" data-action="back">Back</button>
@@ -272,6 +277,25 @@ function stationView() {
       <p class="msg msg--error" id="station-msg" role="alert"></p>
     </form>
   </section>`;
+}
+
+function choiceField(f, value) {
+  return `
+    <fieldset class="choice">
+      <legend>${f.label}</legend>
+      <div class="choice__cards">
+        ${f.options
+          .map(
+            (o) => `
+          <label class="pill pill--card">
+            <input type="radio" name="f-${f.name}" value="${o.value}" data-field="${f.name}" ${o.value === value ? 'checked' : ''} />
+            <span><strong>${o.label}</strong><small>${o.description}</small></span>
+          </label>`,
+          )
+          .join('')}
+      </div>
+      ${f.note ? `<p class="hint">${f.note}</p>` : ''}
+    </fieldset>`;
 }
 
 function liveResult(station) {
@@ -307,10 +331,12 @@ function pullUpNote(r) {
 function updateStationFeedback(station, input) {
   const version = versionOf(station, rawFor(station.key));
   const f = version.fields.find((x) => x.name === input.dataset.field);
-  const msg = document.getElementById(`${input.id}-msg`);
-  const warn = f ? checkField(f, input.value) : null;
-  msg.textContent = warn ?? '';
-  msg.className = `msg ${warn ? 'msg--warn' : ''}`;
+  const msg = input.id ? document.getElementById(`${input.id}-msg`) : null;
+  if (msg) {
+    const warn = f ? checkField(f, input.value) : null;
+    msg.textContent = warn ?? '';
+    msg.className = `msg ${warn ? 'msg--warn' : ''}`;
+  }
   document.getElementById('live').innerHTML = liveResult(station);
   const skip = app.querySelector('[data-action="skip"]');
   skip.textContent = 'Didn’t test this';

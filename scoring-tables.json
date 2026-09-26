@@ -1124,6 +1124,47 @@
           }
         }
       },
+      "rowVo2Concept2": {
+        "source": "Concept2 VO2max calculator FAQ ('What is the formula used?'), from Dr. Fritz Hagerman's data comparing lab-measured VO2max with 2000m rowing times.",
+        "expression": "Y (L/min) = intercept - slope * time_min, where time_min is the full 2000m time in minutes. VO2max (ml/kg/min) = Y * 1000 / weight_kg.",
+        "highlyTrained": {
+          "male": {
+            "weightSplitKg": 75,
+            "atOrBelowSplit": {
+              "intercept": 15.1,
+              "slope": 1.5
+            },
+            "aboveSplit": {
+              "intercept": 15.7,
+              "slope": 1.5
+            }
+          },
+          "female": {
+            "weightSplitKg": 61.36,
+            "atOrBelowSplit": {
+              "intercept": 14.6,
+              "slope": 1.5
+            },
+            "aboveSplit": {
+              "intercept": 14.9,
+              "slope": 1.5
+            }
+          }
+        },
+        "notHighlyTrained": {
+          "male": {
+            "intercept": 10.7,
+            "slope": 0.9
+          },
+          "female": {
+            "intercept": 10.26,
+            "slope": 0.93
+          }
+        },
+        "resultDecimals": 2,
+        "validMinVo2": 10,
+        "note": "Used for the 2K row functional age when config.rowVo2Method is 'concept2'. The tier still comes from the row_2k time table. Results below validMinVo2 are outside the formula's data range and are flagged."
+      },
       "rockportFormula": {
         "expression": "VO2max = 132.853 - 0.0769*weight_lb - 0.3877*age - 3.2649*time_min - 0.1565*finish_hr + 6.315*sex",
         "sex": "1 = male, 0 = female",
