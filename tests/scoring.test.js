@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { bandForScore, scoreSession, scoreStation } from '../src/scoring/index.js';
 import baseConfig from '../src/config.js';
 
-// Part 4 answers assume the scorecard pull-up policy.
-const scorecard = { config: { ...baseConfig, pullUpPolicy: 'scorecard' } };
+// Part 4 answers assume the scorecard pull-up policy and the scorecard's
+// time-to-VO2 pairs for the 2K row (they predate the Concept2 formula).
+const scorecard = { config: { ...baseConfig, pullUpPolicy: 'scorecard', rowVo2Method: 'scorecard' } };
 const bestOfBoth = { config: { ...baseConfig, pullUpPolicy: 'best_of_both' } };
 
 const TOL = 0.1;
@@ -279,5 +280,61 @@ describe('Owner decisions and rules', () => {
       },
     });
     expect(res.focus).toEqual(['sitting_rising', 'single_leg_stance']);
+  });
+});
+
+describe('2K row VO₂: Concept2 / Hagerman formula (default)', () => {
+  const row = (sex, age, bodyweightLb, time, highlyTrained) =>
+    scoreStation('cardio', { version: 'row_2k', timeSeconds: mmss(time), highlyTrained }, { sex, age, bodyweightLb });
+
+  it('male 35, 185 lb, 7:45, not highly trained → VO₂ 44.39, Good (from time), age 20.4', () => {
+    // Y = 10.7 − 0.9 × 7.75 = 3.725 L/min; 3725 / 83.915 kg = 44.39
+    const r = row('male', 35, 185, '7:45', false);
+    expect(r.vo2).toBe(44.39);
+    expect(r.tier).toBe('good');
+    closeTo(r.age, 20.4);
+  });
+
+  it('male > 75 kg, highly trained: 15.7 − 1.5 × t', () => {
+    // Y = 15.7 − 11.625 = 4.075; 4075 / 83.915 = 48.56
+    expect(row('male', 35, 185, '7:45', true).vo2).toBe(48.56);
+  });
+
+  it('male ≤ 75 kg, highly trained: 15.1 − 1.5 × t', () => {
+    // 70 kg = 154.322 lb; Y = 15.1 − 11.25 = 3.85; 3850 / 70 = 55.00
+    closeTo(row('male', 30, 70 * 2.2046, '7:30', true).vo2, 55.0);
+  });
+
+  it('female ≤ 61.36 kg, highly trained: 14.6 − 1.5 × t', () => {
+    // 55 kg; Y = 14.6 − 1.5 × 7.6667 = 3.1; 3100 / 55 = 56.36
+    closeTo(row('female', 30, 55 * 2.2046, '7:40', true).vo2, 56.36);
+  });
+
+  it('female > 61.36 kg, highly trained: 14.9 − 1.5 × t', () => {
+    // 62 kg; Y = 14.9 − 12 = 2.9; 2900 / 62 = 46.77
+    closeTo(row('female', 30, 62 * 2.2046, '8:00', true).vo2, 46.77);
+  });
+
+  it('female 44, 150 lb, 9:00, not highly trained → VO₂ 27.78, Strong (from time), age 50.6', () => {
+    // Y = 10.26 − 0.93 × 9 = 1.89; 1890 / 68.039 = 27.78 → age 45 + (30 − 27.78) / 0.4 = 50.6
+    const r = row('female', 44, 150, '9:00', false);
+    closeTo(r.vo2, 27.78);
+    expect(r.tier).toBe('strong');
+    closeTo(r.age, 50.6);
+    expect(r.notes).toEqual([]);
+  });
+
+  it('below 10 ml/kg/min is flagged and the age uses the clamped value', () => {
+    // male 65, 185 lb, 11:15: Y = 10.7 − 10.125 = 0.575; 575 / 83.915 = 6.85
+    const r = row('male', 65, 185, '11:15', false);
+    closeTo(r.vo2, 6.85);
+    expect(r.tier).toBe('fair');
+    expect(r.notes.length).toBe(1);
+    closeTo(r.age, 85);
+  });
+
+  it("'scorecard' method keeps the original time-to-VO₂ pairs", () => {
+    const r = scoreStation('cardio', { version: 'row_2k', timeSeconds: mmss('7:45'), highlyTrained: true }, { sex: 'male', age: 35, bodyweightLb: 185 }, scorecard);
+    closeTo(r.vo2, 40.0);
   });
 });

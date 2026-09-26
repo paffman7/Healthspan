@@ -1,3 +1,27 @@
+import config from '../config.js';
+
+// Concept2 / Hagerman row formula needs the athlete's training level.
+const TRAINING_LEVEL = {
+  name: 'highlyTrained',
+  label: 'Training level',
+  kind: 'choice',
+  defaultValue: 'no',
+  options: [
+    {
+      value: 'no',
+      label: 'Not highly trained',
+      description: 'Most people, including regular gym-goers who row now and then. Not sure? Choose this.',
+    },
+    {
+      value: 'yes',
+      label: 'Highly trained',
+      description:
+        'You do rowing or endurance training 4+ times a week, have for a year or more, and have raced or tested a 2K before.',
+    },
+  ],
+  note: 'For highly trained rowers the formula changes at 165 lb (men) and 135 lb (women), so estimates can jump slightly near those weights.',
+};
+
 // What the athlete sees for each station: names, how-to reminders, versions and
 // input fields. `check` is a soft "Double-check this?" range, not a scoring number.
 
@@ -129,7 +153,14 @@ export const STATIONS = [
     how: 'Run a mile or row 2,000 m as fast as you can, or do the Rockport 1-mile walk at home.',
     versions: [
       { id: 'mile_run', label: '1-mile run', fields: [{ name: 'timeSeconds', label: 'Time', unit: 'mm:ss', kind: 'time', check: [240, 1500] }] },
-      { id: 'row_2k', label: '2K row', fields: [{ name: 'timeSeconds', label: 'Time', unit: 'mm:ss', kind: 'time', check: [330, 900] }] },
+      {
+        id: 'row_2k',
+        label: '2K row',
+        fields: [
+          { name: 'timeSeconds', label: 'Time', unit: 'mm:ss', kind: 'time', check: [330, 900] },
+          ...(config.rowVo2Method === 'concept2' ? [TRAINING_LEVEL] : []),
+        ],
+      },
       {
         id: 'rockport_walk',
         label: 'Rockport walk',
@@ -180,6 +211,7 @@ export function parseNumber(text) {
 }
 
 export function parseField(field, text) {
+  if (field.kind === 'choice') return text === 'yes';
   return field.kind === 'time' ? parseTime(text) : parseNumber(text);
 }
 
@@ -202,7 +234,7 @@ export function toEngineInput(station, raw) {
 /** Soft warnings for values that look unrealistic. Never blocks. */
 export function checkField(field, text) {
   const t = String(text ?? '').trim();
-  if (!t) return null;
+  if (!t || field.kind === 'choice') return null;
   const v = parseField(field, t);
   if (v === null) return field.kind === 'time' ? 'Enter time as mm:ss, e.g. 8:30.' : 'Enter a number.';
   if (field.halfSteps && Math.abs(v * 2 - Math.round(v * 2)) > 1e-9) return 'Scores go in half points (e.g. 8.5).';
@@ -244,7 +276,9 @@ export function describeEntry(station, raw) {
     case 'cardio':
       if (version.id === 'known_vo2') return `VO₂ max ${val('vo2max')}`;
       if (!('timeSeconds' in input)) return '';
-      return `${formatTime(input.timeSeconds)} ${version.label.toLowerCase()}${version.id === 'rockport_walk' ? `, HR ${val('finishHr')}` : ''}`;
+      return `${formatTime(input.timeSeconds)} ${version.label.toLowerCase()}${version.id === 'rockport_walk' ? `, HR ${val('finishHr')}` : ''}${
+        input.highlyTrained ? ', highly trained' : ''
+      }`;
     case 'jump':
       return `${val('inches')} in ${version.label.toLowerCase()}`;
     default:
