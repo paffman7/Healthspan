@@ -186,9 +186,14 @@ const scorers = {
       if (!isNum(input.squeezeLb) || !isNum(input.emptyLb)) return null;
       kg = gripFromScale(input.squeezeLb, input.emptyLb, tables);
       calculated = { label: 'Grip', value: roundTo(kg, 1), text: `${kg.toFixed(1)} kg` };
-    } else {
-      if (!isNum(input.kg)) return null;
+    } else if (isNum(input.kg)) {
       kg = input.kg;
+    } else if (isNum(input.grip)) {
+      // Dynamometer reading in the athlete's chosen unit; the tables are in kg.
+      kg = input.gripUnit === 'lb' ? input.grip / tables.formulas.lbPerKg : input.grip;
+      if (input.gripUnit === 'lb') calculated = { label: 'Grip', value: roundTo(kg, 1), text: `${kg.toFixed(1)} kg` };
+    } else {
+      return null;
     }
     return { ...rate(kg, tables.stations.grip_strength, athlete, tables), variant: input.version ?? 'dynamometer', calculated };
   },

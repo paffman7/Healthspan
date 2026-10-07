@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { bandForScore, scoreSession, scoreStation } from '../src/scoring/index.js';
 import baseConfig from '../src/config.js';
+import { STATIONS, checkField, toEngineInput } from '../src/ui/stations.js';
 
 // Part 4 answers assume the scorecard pull-up policy and the scorecard's
 // time-to-VO2 pairs for the 2K row (they predate the Concept2 formula).
@@ -365,5 +366,45 @@ describe('Elite cutoff second counts as Elite (matches the VO₂ table)', () => 
   it('male 35: 6:30 mile is Elite, 6:31 is Strong', () => {
     expect(scoreStation('cardio', { version: 'mile_run', timeSeconds: mmss('6:30') }, m35).tier).toBe('elite');
     expect(scoreStation('cardio', { version: 'mile_run', timeSeconds: mmss('6:31') }, m35).tier).toBe('strong');
+  });
+});
+
+describe('Grip in pounds or kilograms', () => {
+  const m47 = { sex: 'male', age: 47, bodyweightLb: 185 };
+
+  it('104.7 lb = 47.49 kg scores the same as 47.5 kg (Athlete A: Strong, age 40)', () => {
+    const lb = scoreStation('grip_strength', { version: 'dynamometer', gripUnit: 'lb', grip: 104.7 }, m47);
+    expect(lb.tier).toBe('strong');
+    closeTo(lb.age, 40.0);
+    expect(lb.calculated.text).toBe('47.5 kg');
+  });
+
+  it('kg entered through the unit switch needs no conversion', () => {
+    const kg = scoreStation('grip_strength', { version: 'dynamometer', gripUnit: 'kg', grip: 47.5 }, m47);
+    expect(kg.tier).toBe('strong');
+    closeTo(kg.age, 40.0);
+    expect(kg.calculated).toBeNull();
+  });
+
+  it('the screen defaults to lb and passes the unit through', () => {
+    const grip = STATIONS.find((st) => st.key === 'grip_strength');
+    expect(toEngineInput(grip, { version: 'dynamometer', values: { grip: '100' } })).toEqual({
+      version: 'dynamometer',
+      gripUnit: 'lb',
+      grip: 100,
+    });
+    expect(toEngineInput(grip, { version: 'dynamometer', values: { gripUnit: 'kg', grip: '45' } })).toEqual({
+      version: 'dynamometer',
+      gripUnit: 'kg',
+      grip: 45,
+    });
+  });
+
+  it('"Double-check this?" range follows the unit', () => {
+    const grip = STATIONS.find((st) => st.key === 'grip_strength');
+    const field = grip.versions[0].fields.find((f) => f.name === 'grip');
+    expect(checkField(field, '100', 'lb')).toBeNull();
+    expect(checkField(field, '100', 'kg')).toBe('Double-check this?');
+    expect(checkField(field, '10', 'lb')).toBe('Double-check this?');
   });
 });

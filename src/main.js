@@ -2,7 +2,7 @@ import './styles.css';
 import tables from '../scoring-tables.json';
 import config from './config.js';
 import { buildResultsRecord, scoreStation } from './scoring/index.js';
-import { STATIONS, checkField, describeEntry, toEngineInput, versionOf } from './ui/stations.js';
+import { STATIONS, checkField, describeEntry, toEngineInput, unitOf, versionOf } from './ui/stations.js';
 import { sendToHubspot } from './ui/hubspot.js';
 
 const STORAGE_KEY = 'primedy-healthspan-draft';
@@ -113,7 +113,11 @@ function go(step, stationIndex = state.stationIndex) {
 
 function render() {
   if (state.step === 'about') app.innerHTML = aboutView();
-  else if (state.step === 'station') app.innerHTML = stationView();
+  else if (state.step === 'station') {
+    app.innerHTML = stationView();
+    const station = STATIONS[state.stationIndex];
+    app.querySelectorAll('input[data-field][id]').forEach((input) => showFieldWarning(station, input));
+  }
   else if (state.step === 'contact') app.innerHTML = contactView();
   else app.innerHTML = resultsView();
   document.title = `${app.querySelector('h1')?.textContent ?? 'Healthspan'} | Primedy Healthspan Calculator`;
@@ -247,6 +251,10 @@ function stationView() {
           : ''
       }
       ${version.note ? `<p class="note">${version.note}</p>` : ''}
+      ${version.fields
+        .filter((f) => f.kind === 'choice' && f.compact)
+        .map((f) => compactChoice(f, raw.values[f.name] ?? f.defaultValue))
+        .join('')}
       <div class="row row--fields">
         ${version.fields
           .filter((f) => f.kind !== 'choice')
@@ -255,7 +263,7 @@ function stationView() {
             return field({
               id: `f-${f.name}`,
               label: `${f.label}${f.optional ? ' <span class="optional">optional</span>' : ''}`,
-              unit: f.unit,
+              unit: unitOf(f, version, raw.values),
               value,
               inputmode: f.kind === 'time' ? 'text' : f.step && f.step % 1 === 0 ? 'numeric' : 'decimal',
               attrs: `data-field="${f.name}" autocomplete="off" ${f.kind === 'time' ? 'placeholder="mm:ss" ' : ''}`,
@@ -265,7 +273,7 @@ function stationView() {
           .join('')}
       </div>
       ${version.fields
-        .filter((f) => f.kind === 'choice')
+        .filter((f) => f.kind === 'choice' && !f.compact)
         .map((f) => choiceField(f, raw.values[f.name] ?? f.defaultValue))
         .join('')}
       <div class="live" id="live" aria-live="polite">${liveResult(station)}</div>
@@ -277,6 +285,24 @@ function stationView() {
       <p class="msg msg--error" id="station-msg" role="alert"></p>
     </form>
   </section>`;
+}
+
+function compactChoice(f, value) {
+  return `
+    <fieldset class="choice">
+      <legend>${f.label}</legend>
+      <div class="choice__options choice__options--small">
+        ${f.options
+          .map(
+            (o) => `
+          <label class="pill pill--small">
+            <input type="radio" name="f-${f.name}" value="${o.value}" data-field="${f.name}" ${o.value === value ? 'checked' : ''} />
+            <span>${o.label}</span>
+          </label>`,
+          )
+          .join('')}
+      </div>
+    </fieldset>`;
 }
 
 function choiceField(f, value) {
@@ -328,15 +354,19 @@ function pullUpNote(r) {
   return `<p class="live__calc">Tier from your ${name[r.tierFrom]}, age from your ${name[r.ageFrom]}</p>`;
 }
 
-function updateStationFeedback(station, input) {
-  const version = versionOf(station, rawFor(station.key));
+function showFieldWarning(station, input) {
+  const raw = rawFor(station.key);
+  const version = versionOf(station, raw);
   const f = version.fields.find((x) => x.name === input.dataset.field);
   const msg = input.id ? document.getElementById(`${input.id}-msg`) : null;
-  if (msg) {
-    const warn = f ? checkField(f, input.value) : null;
-    msg.textContent = warn ?? '';
-    msg.className = `msg ${warn ? 'msg--warn' : ''}`;
-  }
+  if (!msg) return;
+  const warn = f ? checkField(f, input.value, unitOf(f, version, raw.values)) : null;
+  msg.textContent = warn ?? '';
+  msg.className = `msg ${warn ? 'msg--warn' : ''}`;
+}
+
+function updateStationFeedback(station, input) {
+  showFieldWarning(station, input);
   document.getElementById('live').innerHTML = liveResult(station);
   const skip = app.querySelector('[data-action="skip"]');
   skip.textContent = 'Didn’t test this';
@@ -563,6 +593,13 @@ app.addEventListener('input', (ev) => {
       raw.values[t.dataset.field] = t.value;
       raw.notTested = false;
       save();
+      const version = versionOf(station, raw);
+      if (version.fields.some((f) => f.unitFrom === t.dataset.field)) {
+        // A unit switch changes other fields' labels and ranges: redraw the screen.
+        render();
+        app.querySelector(`input[name="${t.name}"][value="${t.value}"]`)?.focus();
+        return;
+      }
       updateStationFeedback(station, t);
     }
   } else if (state.step === 'contact') {
