@@ -120,9 +120,9 @@ describe('Edge cases', () => {
   const f = (age = 47, extra = {}) => ({ sex: 'female', age, bodyweightLb: 150, ...extra });
   const s = (key, input, athlete, opts = scorecard) => scoreStation(key, input, athlete, opts);
 
-  it('female grip 31 kg / 33 kg → age 30.0 / 20', () => {
+  it('female grip 31 kg / 33 kg → age 30.0 / 25 (lowest age is 25)', () => {
     closeTo(s('grip_strength', { kg: 31 }, f()).age, 30.0);
-    closeTo(s('grip_strength', { kg: 33 }, f()).age, 20);
+    closeTo(s('grip_strength', { kg: 33 }, f()).age, 25);
   });
 
   it('male deadlift 1.60× → age 39.0', () => {
@@ -150,9 +150,9 @@ describe('Edge cases', () => {
     closeTo(s('pull_ups', { version: 'pull_ups', reps: 1 }, m()).age, 65.0);
   });
 
-  it('male body fat 22% / 12% → age 50.0 / 20', () => {
+  it('male body fat 22% / 12% → age 50.0 / 25 (lowest age is 25)', () => {
     closeTo(s('body_composition', { version: 'inbody', bodyFatPercent: 22 }, m()).age, 50.0);
-    closeTo(s('body_composition', { version: 'inbody', bodyFatPercent: 12 }, m()).age, 20);
+    closeTo(s('body_composition', { version: 'inbody', bodyFatPercent: 12 }, m()).age, 25);
   });
 
   it('male 45, grip 44.5 kg → Good', () => {
@@ -203,12 +203,12 @@ describe('Pull-up policy: best_of_both', () => {
     closeTo(r.age, 60.0);
   });
 
-  it('2 pull-ups + 90 s hang → Strong (from hang), age 20', () => {
+  it('2 pull-ups + 90 s hang → Strong (from hang), age 25', () => {
     const r = scoreStation('pull_ups', input, athlete, bestOfBoth);
     expect(r.tier).toBe('strong');
     expect(r.tierFrom).toBe('dead_hang');
     expect(r.points).toBe(8);
-    closeTo(r.age, 20);
+    closeTo(r.age, 25);
   });
 
   it('same input under scorecard policy uses pull-ups', () => {
@@ -232,7 +232,7 @@ describe('Owner decisions and rules', () => {
   it('ASMI below the sarcopenia line caps body comp at Fair', () => {
     const r = scoreStation('body_composition', { version: 'inbody', bodyFatPercent: 12, asmi: 6.5 }, m);
     expect(r.tier).toBe('fair');
-    closeTo(r.age, 20); // functional age is unchanged by the cap
+    closeTo(r.age, 25); // functional age is unchanged by the cap
     const r2 = scoreStation('body_composition', { version: 'inbody', bodyFatPercent: 12, asmi: 6.5 }, m, {
       config: { ...baseConfig, asmiCap: 'at_risk' },
     });
@@ -289,12 +289,12 @@ describe("2K row VO₂: Concept2 / Hagerman formula (rowVo2Method: 'concept2')",
   const row = (sex, age, bodyweightLb, time, highlyTrained) =>
     scoreStation('cardio', { version: 'row_2k', timeSeconds: mmss(time), highlyTrained }, { sex, age, bodyweightLb }, concept2);
 
-  it('male 35, 185 lb, 7:45, not highly trained → VO₂ 44.39, Good (from time), age 20.4', () => {
+  it('male 35, 185 lb, 7:45, not highly trained → VO₂ 44.39, Good (from time), age 25 (floor)', () => {
     // Y = 10.7 − 0.9 × 7.75 = 3.725 L/min; 3725 / 83.915 kg = 44.39
     const r = row('male', 35, 185, '7:45', false);
     expect(r.vo2).toBe(44.39);
     expect(r.tier).toBe('good');
-    closeTo(r.age, 20.4);
+    closeTo(r.age, 25);
   });
 
   it('male > 75 kg, highly trained: 15.7 − 1.5 × t', () => {
@@ -406,5 +406,32 @@ describe('Grip in pounds or kilograms', () => {
     expect(checkField(field, '100', 'lb')).toBeNull();
     expect(checkField(field, '100', 'kg')).toBe('Double-check this?');
     expect(checkField(field, '10', 'lb')).toBe('Double-check this?');
+  });
+});
+
+describe('Lowest functional age is 25 for every station', () => {
+  const athletes = [
+    { sex: 'male', age: 30, bodyweightLb: 160, heightCm: 180 },
+    { sex: 'female', age: 30, bodyweightLb: 130, heightCm: 165 },
+  ];
+  // Best-possible or far-beyond-elite results for each station.
+  const best = [
+    ['body_composition', { version: 'inbody', bodyFatPercent: 3 }],
+    ['sitting_rising', { score: 10 }],
+    ['single_leg_stance', { seconds: 300 }],
+    ['grip_strength', { kg: 90 }],
+    ['deadlift', { weightLb: 600, reps: 3 }],
+    ['strict_press', { weightLb: 250, reps: 3 }],
+    ['push_ups', { version: 'full', reps: 100 }],
+    ['pull_ups', { version: 'both', reps: 40, hangSeconds: 300 }],
+    ['cardio', { version: 'known_vo2', vo2max: 80 }],
+    ['jump', { version: 'vertical', inches: 40 }],
+  ];
+  it.each(best)('%s bottoms out at exactly 25', (key, input) => {
+    for (const a of athletes) expect(scoreStation(key, input, a).age).toBe(25);
+  });
+  it('a perfect SRT and a far-beyond-elite grip give the same age', () => {
+    const a = athletes[0];
+    expect(scoreStation('sitting_rising', { score: 10 }, a).age).toBe(scoreStation('grip_strength', { kg: 90 }, a).age);
   });
 });

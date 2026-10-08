@@ -91,7 +91,7 @@ If a value looks unrealistic (a 3-minute mile, say), show a gentle "Double-check
 3. When neighboring medians are equal, merge them into one point at their average age. For example, men's deadlift is 1.75 at both 25 and 35, which becomes one point at 30.
 4. If the result falls between two points, draw a straight line between them and read off the age.
 5. If it's beyond either end, extend the nearest line.
-6. Clamp the answer to 20–85.
+6. Clamp the answer to 25–85. 25 is the youngest anchor (the 20–29 median), so no station claims a younger age than the data supports. (Was 20–85.)
 7. Keep full precision in calculations and show whole years.
 
 **Calculated values.**
@@ -118,7 +118,7 @@ If a value looks unrealistic (a 3-minute mile, say), show a gentle "Double-check
 
 ## Part 4: Test answers
 
-The engine must match these to within ±0.1 year. They assume `pullUpPolicy: "scorecard"`. Add one extra test for `best_of_both`: a man, age 35, with 2 pull-ups and a 90-second hang should score Strong (from the hang) with age 20. Pull-ups alone would give At-Risk and age 60.0.
+The engine must match these to within ±0.1 year. They assume `pullUpPolicy: "scorecard"`. Add one extra test for `best_of_both`: a man, age 35, with 2 pull-ups and a 90-second hang should score Strong (from the hang) with age 25. Pull-ups alone would give At-Risk and age 60.0.
 
 **Athlete A: male, 47, 185 lb**
 
@@ -156,13 +156,13 @@ The engine must match these to within ±0.1 year. They assume `pullUpPolicy: "sc
 
 | Case | Expected |
 |---|---|
-| Female grip 31 kg / 33 kg | Age 30.0 / 20 |
+| Female grip 31 kg / 33 kg | Age 30.0 / 25 |
 | Male deadlift 1.60× | Age 39.0 |
 | SRT 10 / 3 | Age 25.0 / 85 |
 | Male push-ups 0 | Age 85 |
 | Female pull-ups 1 / 2 | Age 40.0 / 25.0 |
 | Male pull-ups 1 | Age 65.0 |
-| Male body fat 22% / 12% | Age 50.0 / 20 |
+| Male body fat 22% / 12% | Age 50.0 / 25 |
 | Male 45, grip 44.5 kg | Good |
 | Male 35, mile 7:30 / 7:31 | Strong / Good |
 | Male 35, 2K row 7:45 | VO₂ 40.0, Good, age 35.0 |
