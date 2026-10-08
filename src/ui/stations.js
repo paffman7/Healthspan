@@ -30,11 +30,12 @@ export const STATIONS = [
   {
     key: 'body_composition',
     title: 'Body Composition',
-    how: 'InBody scan for body fat % and muscle mass, or a tape measure at home.',
+    how: 'Body fat % from an InBody scan or a body-fat scale. No scale? Use a tape measure.',
     versions: [
       {
         id: 'inbody',
-        label: 'InBody',
+        label: 'Body-fat scale',
+        note: 'InBody in the gym, or a bathroom scale that measures body fat % at home. Use the same device when you re-test.',
         fields: [
           { name: 'bodyFatPercent', label: 'Body fat', unit: '%', step: 0.1, check: [4, 55] },
           { name: 'asmi', label: 'ASMI (skeletal muscle index)', unit: 'kg/m²', step: 0.1, optional: true, check: [3.5, 13] },
@@ -42,8 +43,8 @@ export const STATIONS = [
       },
       {
         id: 'tape',
-        label: 'Tape measure',
-        note: 'Waist at the navel, calf at its widest point.',
+        label: 'Tape measure (no scale)',
+        note: 'Waist at the navel, calf at its widest point. Scored on waist-to-height; it has no functional age, so it isn’t part of your Healthspan Age.',
         fields: [
           { name: 'waistCm', label: 'Waist', unit: 'cm', step: 0.5, check: [50, 170] },
           { name: 'calfCm', label: 'Calf', unit: 'cm', step: 0.5, optional: true, check: [22, 55] },

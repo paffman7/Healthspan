@@ -672,6 +672,15 @@ fieldset.choice {
   color: var(--muted);
 }
 
+.based-on p {
+  margin: 0;
+}
+
+.based-on p + p {
+  margin-top: 6px;
+  font-weight: 400;
+}
+
 .based-on {
   margin: 16px 0 0;
   padding: 10px 14px;

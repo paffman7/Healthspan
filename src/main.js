@@ -462,7 +462,7 @@ function resultsView() {
       </div>
     </div>
 
-    ${res.testedCount < res.stationCount ? `<p class="based-on">Based on ${res.testedCount} of ${res.stationCount} stations.</p>` : ''}
+    ${incompleteNote(res)}
 
     ${
       focus.length
@@ -500,6 +500,20 @@ function resultsView() {
 
     <footer class="footer">Estimates based on population norms, not a medical assessment. Re-test in 12 weeks using the same test versions.</footer>
   </section>`;
+}
+
+function incompleteNote(res) {
+  const missing = res.testedCount < res.stationCount;
+  const ageGap = res.ageCount < res.testedCount;
+  if (!missing && !ageGap) return '';
+  const lines = [];
+  if (missing) lines.push(`Based on ${res.testedCount} of ${res.stationCount} stations.`);
+  if (ageGap) lines.push(`Healthspan Age is based on ${res.ageCount} functional ${res.ageCount === 1 ? 'age' : 'ages'} (tape-measure body composition has no age table).`);
+  return `
+    <div class="based-on" role="note">
+      <p><strong>${lines.join(' ')}</strong></p>
+      <p>Your Healthspan Score and Healthspan Age may not accurately reflect your healthspan because some data is missing. Complete all ${res.stationCount} stations next time for the full picture.</p>
+    </div>`;
 }
 
 const tierBadgeBand = (band) => `<span class="badge badge--${band.key}">${band.label.replace(' Healthspan', '')}</span>`;

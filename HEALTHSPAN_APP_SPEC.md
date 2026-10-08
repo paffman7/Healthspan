@@ -41,7 +41,7 @@ Results update as values are typed, and athletes can go back and edit anything.
 
 | # | Station | Versions | What they enter |
 |---|---|---|---|
-| 1 | Body Composition | InBody · Tape measure | InBody: body fat %, ASMI. Tape: waist and calf (cm) |
+| 1 | Body Composition | Body-fat scale (InBody in-gym, or a home scale that measures body fat %) · Tape measure (no scale) | Scale: body fat %, ASMI (optional). Tape: waist and calf (cm) |
 | 2 | Sitting-Rising Test | none | Score 0–10 (half points allowed) |
 | 3 | Single-Leg Stance | none | Best hold in seconds |
 | 4 | Grip Strength | Dynamometer · Bathroom scale | Kg, or scale reading and empty reading in lb |
@@ -59,7 +59,7 @@ If a value looks unrealistic (a 3-minute mile, say), show a gentle "Double-check
 - **Score:** Healthspan Score out of 100, the band name and its description.
 - **Station breakdown:** for each station, what they entered, the calculated figure (e.g. "1.75× bodyweight" or "est. VO₂ 37"), tier badge, points and functional age. Add a simple bar chart of the 10 ages against a line at their real age.
 - **Focus next:** the two stations with the lowest points, with ties going to the one furthest above their real age.
-- **Missing stations:** if some weren't tested, show "Based on X of 10 stations."
+- **Missing stations:** if some weren't tested, show "Based on X of 10 stations." If any data is missing (an untested station, or tape-measure body composition, which has no functional age), add: "Your Healthspan Score and Healthspan Age may not accurately reflect your healthspan because some data is missing."
 - **Buttons:** Print / Save PDF · Edit results · Start over.
 - **Footer:** "Estimates based on population norms, not a medical assessment. Re-test in 12 weeks using the same test versions."
 
