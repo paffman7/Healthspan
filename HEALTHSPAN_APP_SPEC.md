@@ -41,7 +41,7 @@ Results update as values are typed, and athletes can go back and edit anything.
 
 | # | Station | Versions | What they enter |
 |---|---|---|---|
-| 1 | Body Composition | InBody · Tape measure | InBody: body fat %, ASMI. Tape: waist and calf (cm) |
+| 1 | Body Composition | Body-fat scale (InBody in-gym, or a home scale that measures body fat %) · Tape measure (no scale) | Scale: body fat %, ASMI (optional). Tape: waist and calf (cm) |
 | 2 | Sitting-Rising Test | none | Score 0–10 (half points allowed) |
 | 3 | Single-Leg Stance | none | Best hold in seconds |
 | 4 | Grip Strength | Dynamometer · Bathroom scale | Kg, or scale reading and empty reading in lb |
@@ -59,7 +59,7 @@ If a value looks unrealistic (a 3-minute mile, say), show a gentle "Double-check
 - **Score:** Healthspan Score out of 100, the band name and its description.
 - **Station breakdown:** for each station, what they entered, the calculated figure (e.g. "1.75× bodyweight" or "est. VO₂ 37"), tier badge, points and functional age. Add a simple bar chart of the 10 ages against a line at their real age.
 - **Focus next:** the two stations with the lowest points, with ties going to the one furthest above their real age.
-- **Missing stations:** if some weren't tested, show "Based on X of 10 stations."
+- **Missing stations:** if some weren't tested, show "Based on X of 10 stations." If any data is missing (an untested station, or tape-measure body composition, which has no functional age), add: "Your Healthspan Score and Healthspan Age may not accurately reflect your healthspan because some data is missing."
 - **Buttons:** Print / Save PDF · Edit results · Start over.
 - **Footer:** "Estimates based on population norms, not a medical assessment. Re-test in 12 weeks using the same test versions."
 
@@ -91,7 +91,7 @@ If a value looks unrealistic (a 3-minute mile, say), show a gentle "Double-check
 3. When neighboring medians are equal, merge them into one point at their average age. For example, men's deadlift is 1.75 at both 25 and 35, which becomes one point at 30.
 4. If the result falls between two points, draw a straight line between them and read off the age.
 5. If it's beyond either end, extend the nearest line.
-6. Clamp the answer to 20–85.
+6. Clamp the answer to 25–85. 25 is the youngest anchor (the 20–29 median), so no station claims a younger age than the data supports. (Was 20–85.)
 7. Keep full precision in calculations and show whole years.
 
 **Calculated values.**
@@ -118,7 +118,7 @@ If a value looks unrealistic (a 3-minute mile, say), show a gentle "Double-check
 
 ## Part 4: Test answers
 
-The engine must match these to within ±0.1 year. They assume `pullUpPolicy: "scorecard"`. Add one extra test for `best_of_both`: a man, age 35, with 2 pull-ups and a 90-second hang should score Strong (from the hang) with age 20. Pull-ups alone would give At-Risk and age 60.0.
+The engine must match these to within ±0.1 year. They assume `pullUpPolicy: "scorecard"`. Add one extra test for `best_of_both`: a man, age 35, with 2 pull-ups and a 90-second hang should score Strong (from the hang) with age 25. Pull-ups alone would give At-Risk and age 60.0.
 
 **Athlete A: male, 47, 185 lb**
 
@@ -156,13 +156,13 @@ The engine must match these to within ±0.1 year. They assume `pullUpPolicy: "sc
 
 | Case | Expected |
 |---|---|
-| Female grip 31 kg / 33 kg | Age 30.0 / 20 |
+| Female grip 31 kg / 33 kg | Age 30.0 / 25 |
 | Male deadlift 1.60× | Age 39.0 |
 | SRT 10 / 3 | Age 25.0 / 85 |
 | Male push-ups 0 | Age 85 |
 | Female pull-ups 1 / 2 | Age 40.0 / 25.0 |
 | Male pull-ups 1 | Age 65.0 |
-| Male body fat 22% / 12% | Age 50.0 / 20 |
+| Male body fat 22% / 12% | Age 50.0 / 25 |
 | Male 45, grip 44.5 kg | Good |
 | Male 35, mile 7:30 / 7:31 | Strong / Good |
 | Male 35, 2K row 7:45 | VO₂ 40.0, Good, age 35.0 |

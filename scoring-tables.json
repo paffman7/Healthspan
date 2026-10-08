@@ -72,7 +72,7 @@
       65,
       75
     ],
-    "clampMin": 20,
+    "clampMin": 25,
     "clampMax": 85
   },
   "formulas": {

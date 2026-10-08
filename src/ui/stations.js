@@ -5,6 +5,7 @@ const TRAINING_LEVEL = {
   name: 'highlyTrained',
   label: 'Training level',
   kind: 'choice',
+  boolean: true,
   defaultValue: 'no',
   options: [
     {
@@ -29,11 +30,12 @@ export const STATIONS = [
   {
     key: 'body_composition',
     title: 'Body Composition',
-    how: 'InBody scan for body fat % and muscle mass, or a tape measure at home.',
+    how: 'Body fat % from an InBody scan or a body-fat scale. No scale? Use a tape measure.',
     versions: [
       {
         id: 'inbody',
-        label: 'InBody',
+        label: 'Body-fat scale',
+        note: 'InBody in the gym, or a bathroom scale that measures body fat % at home. Use the same device when you re-test.',
         fields: [
           { name: 'bodyFatPercent', label: 'Body fat', unit: '%', step: 0.1, check: [4, 55] },
           { name: 'asmi', label: 'ASMI (skeletal muscle index)', unit: 'kg/m²', step: 0.1, optional: true, check: [3.5, 13] },
@@ -41,8 +43,8 @@ export const STATIONS = [
       },
       {
         id: 'tape',
-        label: 'Tape measure',
-        note: 'Waist at the navel, calf at its widest point.',
+        label: 'Tape measure (no scale)',
+        note: 'Waist at the navel, calf at its widest point. Scored on waist-to-height; it has no functional age, so it isn’t part of your Healthspan Age.',
         fields: [
           { name: 'waistCm', label: 'Waist', unit: 'cm', step: 0.5, check: [50, 170] },
           { name: 'calfCm', label: 'Calf', unit: 'cm', step: 0.5, optional: true, check: [22, 55] },
@@ -72,7 +74,24 @@ export const STATIONS = [
     title: 'Grip Strength',
     how: 'Squeeze as hard as you can with your dominant hand. Best of 3.',
     versions: [
-      { id: 'dynamometer', label: 'Dynamometer', fields: [{ name: 'kg', label: 'Grip', unit: 'kg', step: 0.5, check: [8, 85] }] },
+      {
+        id: 'dynamometer',
+        label: 'Dynamometer',
+        fields: [
+          {
+            name: 'gripUnit',
+            label: 'Unit',
+            kind: 'choice',
+            compact: true,
+            defaultValue: 'lb',
+            options: [
+              { value: 'lb', label: 'lb' },
+              { value: 'kg', label: 'kg' },
+            ],
+          },
+          { name: 'grip', label: 'Grip', unitFrom: 'gripUnit', step: 0.5, checkByUnit: { lb: [18, 185], kg: [8, 85] } },
+        ],
+      },
       {
         id: 'scale',
         label: 'Bathroom scale',
@@ -211,8 +230,15 @@ export function parseNumber(text) {
 }
 
 export function parseField(field, text) {
-  if (field.kind === 'choice') return text === 'yes';
+  if (field.kind === 'choice') return field.boolean ? text === 'yes' : text;
   return field.kind === 'time' ? parseTime(text) : parseNumber(text);
+}
+
+/** A field's unit: fixed, or taken from a unit choice on the same screen (e.g. lb / kg). */
+export function unitOf(field, version, values = {}) {
+  if (!field.unitFrom) return field.unit;
+  const chooser = version.fields.find((f) => f.name === field.unitFrom);
+  return values[field.unitFrom] ?? chooser?.defaultValue;
 }
 
 export function versionOf(station, raw) {
@@ -232,13 +258,14 @@ export function toEngineInput(station, raw) {
 }
 
 /** Soft warnings for values that look unrealistic. Never blocks. */
-export function checkField(field, text) {
+export function checkField(field, text, unit) {
   const t = String(text ?? '').trim();
   if (!t || field.kind === 'choice') return null;
   const v = parseField(field, t);
   if (v === null) return field.kind === 'time' ? 'Enter time as mm:ss, e.g. 8:30.' : 'Enter a number.';
   if (field.halfSteps && Math.abs(v * 2 - Math.round(v * 2)) > 1e-9) return 'Scores go in half points (e.g. 8.5).';
-  if (field.check && (v < field.check[0] || v > field.check[1])) return 'Double-check this?';
+  const range = field.checkByUnit ? field.checkByUnit[unit] : field.check;
+  if (range && (v < range[0] || v > range[1])) return 'Double-check this?';
   return null;
 }
 
@@ -261,7 +288,7 @@ export function describeEntry(station, raw) {
     case 'single_leg_stance':
       return `${val('seconds')} s`;
     case 'grip_strength':
-      return version.id === 'scale' ? `Scale ${val('squeezeLb')} lb − ${val('emptyLb') || 0} lb` : `${val('kg')} kg`;
+      return version.id === 'scale' ? `Scale ${val('squeezeLb')} lb − ${val('emptyLb') || 0} lb` : `${val('grip')} ${val('gripUnit')}`;
     case 'deadlift':
     case 'strict_press':
       return `${val('weightLb')} lb × ${val('reps') || 3}${version.id === 'dumbbells' ? ' (DBs)' : ''}`;
